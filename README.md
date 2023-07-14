@@ -8,5 +8,5 @@ For page turns, either use your device's hardware buttons (if any) or swiping.
 
 ## Install
 
-Simply copy the directory _dictionarymode.koplugin_ from this repository in your KOReader plugin directory.
+Create a new folder _dictionarymode.koplugin_ inside your KOReader _plugins_ folder.
 Make sure the plugin is enabled under _Main Menu_ > _Options_ > _More Tools_ > _Plugin Management_.
