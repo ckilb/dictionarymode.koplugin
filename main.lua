@@ -22,6 +22,11 @@ function DictionaryMode:init()
     self:registerTap()
 end
 
+function DictionaryMode:toggle()
+    local enabled = G_reader_settings:isTrue("enable_dictionary_mode")
+    G_reader_settings:saveSetting("enable_dictionary_mode", not enabled)
+end
+
 function DictionaryMode:addToMainMenu(menu_items)
     menu_items.dictionarymode = {
         text = _("Dictionary Mode"),
@@ -30,16 +35,24 @@ function DictionaryMode:addToMainMenu(menu_items)
             return G_reader_settings:isTrue("enable_dictionary_mode")
         end,
         callback = function()
-            local enabled = G_reader_settings:isTrue("enable_dictionary_mode")
-            G_reader_settings:saveSetting("enable_dictionary_mode", not enabled)
+            self:toggle()
         end,
     }
 end
 
 function DictionaryMode:onDictionaryMode()
+    self:toggle()
+
+    local text = _("Dictionary mode disabled")
+
+    if G_reader_settings:isTrue("enable_dictionary_mode") then
+        text = _("Dictionary mode enabled")
+    end
+
     local popup = InfoMessage:new{
-        text = _("Dictionary mode foobar"),
+        text = text,
     }
+
     UIManager:show(popup)
 end
 
