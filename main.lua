@@ -4,7 +4,6 @@ local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
 local WidgetContainer = require("ui/widget/container/widgetcontainer")
 local _ = require("gettext")
-local logger = require("logger")
 
 local DictionaryMode = WidgetContainer:extend{
     name = "dictionarymode",
@@ -83,7 +82,7 @@ function DictionaryMode:registerTap()
     })
 end
 
-local function cleanupSelectedText(text)
+function DictionaryMode:cleanupSelectedText(text)
     -- Trim spaces and new lines at start and end
     text = text:gsub("^[\n%s]*", "")
     text = text:gsub("[\n%s]*$", "")
@@ -104,22 +103,31 @@ function DictionaryMode:onTap(_, ges)
     end
 
     local pos = self.view:screenToPageTransform(ges.pos)
-    local text = self.ui.document:getTextFromPositions(pos, pos)
+    local selection = self.ui.document:getTextFromPositions(pos, pos)
 
-    if not text then
+    if not selection then
         return false
     end
 
-    if string.find(text.text, " ") then
+    if string.find(selection.text, " ") then
         return false
     end
 
-    self.ui:handleEvent(Event:new("LookupWord", cleanupSelectedText(text.text)))
+    if self.ui.languagesupport and self.ui.languagesupport:hasActiveLanguagePlugins() then
+        -- If this is a language where pan-less word selection needs some
+        -- extra work above and beyond what the document engine gives us
+        -- from getWordFromPosition, call the relevant language-specific
+        -- plugin.
+        local new_selection = self.ui.languagesupport:improveWordSelection(selection)
+        if new_selection then
+            selection = new_selection
+        end
+    end
+
+    self.ui:handleEvent(Event:new("LookupWord", self:cleanupSelectedText(selection.text)))
     self.ui.document:clearSelection()
 
     return true
 end
-
-
 
 return DictionaryMode
