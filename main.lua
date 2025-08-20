@@ -102,30 +102,8 @@ function DictionaryMode:onTap(_, ges)
         return false
     end
 
-    local pos = self.view:screenToPageTransform(ges.pos)
-    local selection = self.ui.document:getTextFromPositions(pos, pos)
-
-    if not selection then
-        return false
-    end
-
-    if string.find(selection.text, " ") then
-        return false
-    end
-
-    if self.ui.languagesupport and self.ui.languagesupport:hasActiveLanguagePlugins() then
-        -- If this is a language where pan-less word selection needs some
-        -- extra work above and beyond what the document engine gives us
-        -- from getWordFromPosition, call the relevant language-specific
-        -- plugin.
-        local new_selection = self.ui.languagesupport:improveWordSelection(selection)
-        if new_selection then
-            selection = new_selection
-        end
-    end
-
-    self.ui:handleEvent(Event:new("LookupWord", self:cleanupSelectedText(selection.text)))
-    self.ui.document:clearSelection()
+    self.ui.highlight:onHold(_, ges)
+    self.ui.highlight:onHoldRelease()
 
     return true
 end
