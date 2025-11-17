@@ -50,6 +50,7 @@ function DictionaryMode:onDictionaryMode()
 
     local popup = InfoMessage:new{
         text = text,
+        timeout = 1,
     }
 
     UIManager:show(popup)
